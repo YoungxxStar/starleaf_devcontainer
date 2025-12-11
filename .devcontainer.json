@@ -1,0 +1,102 @@
+{
+  "name": "LaTeX MCP Dev Container",
+  "image": "texlive/texlive:latest-doc-src",
+  "remoteUser": "root",
+  "containerEnv": {
+    "WORKSPACE_ROOT": "/workspaces/", // 确保overleaf 工程在这下面
+    "MCP_HOST": "0.0.0.0",
+    "MCP_PORT": "8888",
+    "ENABLE_STDIO": "0",
+    "ENABLE_HTTP": "1"
+  },
+  "forwardPorts": [
+    8888
+  ],
+  "postCreateCommand": "apt-get update && apt-get install -y python3 python3-pip python3-venv && python3 -m venv /workspaces/.venv && . /workspaces/.venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt",
+  "postStartCommand": "WORKSPACE_ROOT=/workspaces/ ENABLE_STDIO=0 ENABLE_HTTP=1 MCP_HOST=0.0.0.0 MCP_PORT=8888 /workspaces/.venv/bin/python server.py",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "james-yu.latex-workshop",
+        "aaron-bond.better-comments",
+        "vscodevim.vim",
+        "shardulm94.trailing-spaces"
+      ],
+      "settings": {
+        "files.eol": "\n",
+        "editor.formatOnSave": true,
+        "files.associations": {
+          "*.tex": "latex"
+        },
+        "latex-workshop.latex.autoClean.run": "onBuilt",
+        "latex-workshop.latex.clean.subfolder.enabled": true,
+        "latex-workshop.latex.recipes": [
+          {
+            "name": "latexmk (pdflatex)",
+            "tools": [
+              "latexmk-pdf"
+            ]
+          },
+          {
+            "name": "latexmk (xelatex)",
+            "tools": [
+              "latexmk-xelatex"
+            ]
+          },
+          {
+            "name": "xelatex -> biber -> xelatex*2 (biblatex)",
+            "tools": [
+              "latexmk-xelatex",
+              "biber",
+              "latexmk-xelatex",
+              "latexmk-xelatex"
+            ]
+          }
+        ],
+        "latex-workshop.latex.tools": [
+          {
+            "name": "latexmk-pdf",
+            "command": "latexmk",
+            "args": [
+              "-synctex=1",
+              "-interaction=nonstopmode",
+              "-file-line-error",
+              "-pdf",
+              "%DOC%"
+            ]
+          },
+          {
+            "name": "latexmk-xelatex",
+            "command": "latexmk",
+            "args": [
+              "-synctex=1",
+              "-interaction=nonstopmode",
+              "-file-line-error",
+              "-xelatex",
+              "%DOC%"
+            ]
+          },
+          {
+            "name": "biber",
+            "command": "biber",
+            "args": [
+              "%DOCFILE%"
+            ]
+          }
+        ],
+        "latex-workshop.linting.chktex.enabled": true,
+        "latex-workshop.linting.chktex.exec.path": "chktex",
+        "latex-workshop.latexindent.enabled": true,
+        "latex-workshop.latexindent.exec.path": "latexindent",
+        "latex-workshop.latexindent.args": [
+          "-c",
+          "%DIR%/",
+          "%TMPFILE%",
+          "-y=defaultIndent: '%INDENT%'"
+        ],
+        "latex-workshop.formatting.latex": "latexindent",
+        "latex-workshop.synctex.afterBuild.enabled": true
+      }
+    }
+  }
+}

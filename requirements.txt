@@ -1,0 +1,2 @@
+mcp @ git+https://github.com/modelcontextprotocol/python-sdk.git
+uvicorn>=0.32,<0.34
